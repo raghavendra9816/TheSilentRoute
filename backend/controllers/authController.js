@@ -2,30 +2,41 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-// Generate Token
+// Generate JWT token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+  return jwt.sign(
+    { id },
+    process.env.JWT_SECRET,
+    { expiresIn: '30d' }
+  );
 };
 
-// ====================== REGISTER ======================
+// REGISTER
 const register = async (req, res) => {
   try {
     const { username, email, password, adminKey } = req.body;
 
     if (!username || !email || !password) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide username, email and password.'
+      });
     }
 
-    const existingUser = await User.findOne({ 
-      $or: [{ email: email.toLowerCase() }, { username }] 
+    const existingUser = await User.findOne({
+      $or: [
+        { email: email.toLowerCase().trim() },
+        { username: username.trim() }
+      ]
     });
 
     if (existingUser) {
-      return res.status(400).json({ 
-        success: false, 
-        message: existingUser.email === email.toLowerCase() 
-          ? "Email already registered" 
-          : "Username already taken" 
+      return res.status(400).json({
+        success: false,
+        message:
+          existingUser.email === email.toLowerCase().trim()
+            ? 'Email already registered. Please login.'
+            : 'Username already taken. Please choose another.'
       });
     }
 
@@ -34,9 +45,7 @@ const register = async (req, res) => {
       role = 'admin';
     }
 
-    // Hash password here
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
       username: username.trim(),
@@ -47,52 +56,75 @@ const register = async (req, res) => {
 
     const token = generateToken(user._id);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      message: `Welcome, ${user.username}!`,
+      message: `Welcome to The Silent Route, ${user.username}!`,
       token,
       user: {
         id: user._id,
         username: user.username,
         email: user.email,
         role: user.role,
-        downloadCount: user.downloadCount
+        downloadCount: user.downloadCount,
+        createdAt: user.createdAt
       }
     });
-
   } catch (error) {
-    console.error("Register Error:", error);
-    res.status(500).json({
+    console.error('Register Error:', error.message);
+
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+      return res.status(400).json({
+        success: false,
+        message: `This ${field} is already registered.`
+      });
+    }
+
+    return res.status(500).json({
       success: false,
-      message: "Registration failed",
+      message: 'Registration failed. Please try again.',
       error: error.message
     });
   }
 };
 
-// ====================== LOGIN ======================
+// LOGIN
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ success: false, message: "Email and password required" });
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide email and password.'
+      });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    const user = await User.findOne({
+      email: email.toLowerCase().trim()
+    }).select('+password');
 
     if (!user) {
-      return res.status(401).json({ success: false, message: "Invalid email or password" });
+      return res.status(401).json({
+        success: false,
+        message: 'No account found with this email.'
+      });
     }
 
     if (!user.isActive) {
-      return res.status(401).json({ success: false, message: "Account is deactivated" });
+      return res.status(401).json({
+        success: false,
+        message: 'Your account has been deactivated.'
+      });
     }
 
-    const isValid = await user.comparePassword(password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isValid) {
-      return res.status(401).json({ success: false, message: "Invalid email or password" });
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Incorrect password. Please try again.'
+      });
     }
 
     user.lastLogin = new Date();
@@ -100,7 +132,7 @@ const login = async (req, res) => {
 
     const token = generateToken(user._id);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: `Welcome back, ${user.username}!`,
       token,
@@ -109,23 +141,89 @@ const login = async (req, res) => {
         username: user.username,
         email: user.email,
         role: user.role,
-        downloadCount: user.downloadCount
+        downloadCount: user.downloadCount,
+        lastLogin: user.lastLogin
       }
     });
-
   } catch (error) {
-    console.error("Login Error:", error);
-    res.status(500).json({ success: false, message: "Login failed", error: error.message });
+    console.error('Login Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Login failed. Please try again.',
+      error: error.message
+    });
   }
 };
 
+// GET CURRENT USER
 const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    res.status(200).json({ success: true, user });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found.'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        downloadCount: user.downloadCount,
+        bio: user.bio,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin
+      }
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-module.exports = { register, login, getMe };
+// UPDATE PROFILE
+const updateProfile = async (req, res) => {
+  try {
+    const { username, bio } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        username: username?.trim() || req.user.username,
+        bio: bio || req.user.bio
+      },
+      { new: true, runValidators: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully!',
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        bio: user.bio
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  getMe,
+  updateProfile
+};
