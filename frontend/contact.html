@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact - The Silent Route</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/navbar.css"/>
+  <link rel="stylesheet" href="css/modal.css"/>
+  <link rel="stylesheet" href="css/footer.css"/>
+  <link rel="stylesheet" href="css/contact.css"/>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <i class="fas fa-mountain"></i>
+        <span>The Silent Route</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="gallery.html" class="nav-link">Gallery</a>
+        <a href="videos.html" class="nav-link">Videos</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="contact.html" class="nav-link active">Contact</a>
+        <div class="nav-auth" id="navAuth"></div>
+      </div>
+      <button class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <h1><i class="fas fa-envelope"></i> Get In Touch</h1>
+      <p>Have a question or collaboration idea? We'd love to hear from you!</p>
+    </div>
+  </div>
+
+  <!-- CONTACT SECTION -->
+  <section class="section">
+    <div class="container">
+      <div class="contact-grid">
+
+        <!-- Contact Info Left -->
+        <div class="contact-info">
+          <h2>Let's Connect</h2>
+          <p>
+            Whether you want to collaborate, feature our work,
+            report an issue, or just say hello — our inbox is
+            always open.
+          </p>
+
+          <!-- Info Cards -->
+          <div class="info-cards">
+            <div class="info-card">
+              <div class="info-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="info-content">
+                <h4>Email</h4>
+                <p>hello@thesilentroute.com</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div class="info-content">
+                <h4>Location</h4>
+                <p>Kathmandu, Nepal</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="info-content">
+                <h4>Response Time</h4>
+                <p>Within 24-48 hours</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Media -->
+          <div class="contact-social">
+            <h4>Follow Our Journey</h4>
+            <div class="social-row">
+              <a href="#" class="social-contact-btn facebook">
+                <i class="fab fa-facebook-f"></i>
+                <span>@TheSilentRoute</span>
+              </a>
+              <a href="#" class="social-contact-btn instagram">
+                <i class="fab fa-instagram"></i>
+                <span>@TheSilentRoute</span>
+              </a>
+              <a href="#" class="social-contact-btn youtube">
+                <i class="fab fa-youtube"></i>
+                <span>@TheSilentRoute</span>
+              </a>
+              <a href="#" class="social-contact-btn twitter">
+                <i class="fab fa-twitter"></i>
+                <span>@TheSilentRoute</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form Right -->
+        <div class="contact-form-wrap">
+          <div class="contact-form-card">
+            <h3>Send a Message</h3>
+            <p>Fill the form below and we'll get back to you</p>
+
+            <!-- Success Message -->
+            <div class="form-success" id="formSuccess" style="display:none;">
+              <i class="fas fa-check-circle"></i>
+              <h4>Message Sent!</h4>
+              <p>Thank you! We will get back to you within 24-48 hours.</p>
+            </div>
+
+            <!-- Error Message -->
+            <div class="auth-error" id="formError"></div>
+
+            <form id="contactForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>
+                    <i class="fas fa-user"></i> Your Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="contactName"
+                    placeholder="John Doe"
+                    required
+                    maxlength="50"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>
+                    <i class="fas fa-envelope"></i> Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    id="contactEmail"
+                    placeholder="your@email.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <i class="fas fa-tag"></i> Subject *
+                </label>
+                <select id="contactSubject" required>
+                  <option value="">Select a subject...</option>
+                  <option value="Collaboration">Collaboration</option>
+                  <option value="Media Usage">Media Usage / Licensing</option>
+                  <option value="Technical Issue">Technical Issue</option>
+                  <option value="Download Issue">Download Issue</option>
+                  <option value="General Question">General Question</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <i class="fas fa-comment"></i> Message *
+                </label>
+                <textarea
+                  id="contactMessage"
+                  placeholder="Write your message here..."
+                  required
+                  rows="6"
+                  maxlength="1000"
+                ></textarea>
+                <div class="char-count">
+                  <span id="charCount">0</span>/1000 characters
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                class="btn-primary submit-btn"
+                id="submitContactBtn"
+              >
+                <i class="fas fa-paper-plane"></i> Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FAQ Section -->
+      <div class="faq-section">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-subtitle">Quick answers to common questions</p>
+        <div class="faq-grid">
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>How do I download photos or videos?</span>
+              <i class="fas fa-plus"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                Create a free account and login. Once logged in, you can
+                click the Download button on any photo or video. All
+                downloads include "The Silent Route" watermark.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Can I use your photos commercially?</span>
+              <i class="fas fa-plus"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                Downloaded content with watermark is for personal use only.
+                For commercial licensing, please contact us through this
+                form with the subject "Media Usage".
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Is registration really free?</span>
+              <i class="fas fa-plus"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                Yes! Registration is 100% free. No credit card required.
+                Simply create an account with your email and you can
+                immediately start downloading content.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>How can I collaborate with The Silent Route?</span>
+              <i class="fas fa-plus"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                We are always open to collaborations! Send us a message
+                with "Collaboration" as the subject and tell us about your
+                idea. We will get back to you within 48 hours.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Where do you travel?</span>
+              <i class="fas fa-plus"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                We primarily cover Nepal and the Himalayan region, but
+                our journeys take us across South and Southeast Asia.
+                Follow our social media for live travel updates.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Can I submit my own travel photos?</span>
+              <i class="fas fa-plus"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                Currently the gallery only features our own original work.
+                However, we are considering a community submission feature
+                in the future. Stay tuned!
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <i class="fas fa-mountain"></i>
+            <span>The Silent Route</span>
+          </div>
+          <p>Exploring the world one silent route at a time.</p>
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="videos.html">Videos</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Account</h4>
+          <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h4>Contact Info</h4>
+          <p><i class="fas fa-envelope"></i> hello@thesilentroute.com</p>
+          <p><i class="fas fa-map-marker-alt"></i> Kathmandu, Nepal</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 The Silent Route. All Rights Reserved.</p>
+        <p>Made with <i class="fas fa-heart" style="color:#e94560;"></i> for adventurers</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/contact.js"></script>
+</body>
+</html>

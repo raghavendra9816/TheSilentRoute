@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="The Silent Route - Video Collection"/>
+  <title>Videos - The Silent Route</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/navbar.css"/>
+  <link rel="stylesheet" href="css/gallery.css"/>
+  <link rel="stylesheet" href="css/modal.css"/>
+  <link rel="stylesheet" href="css/footer.css"/>
+  <link rel="stylesheet" href="css/videos.css"/>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <i class="fas fa-mountain"></i>
+        <span>The Silent Route</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="gallery.html" class="nav-link">Gallery</a>
+        <a href="videos.html" class="nav-link active">Videos</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+        <div class="nav-auth" id="navAuth"></div>
+      </div>
+      <button class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <h1><i class="fas fa-video"></i> Video Collection</h1>
+      <p>Watch our journey through breathtaking landscapes and cultures</p>
+    </div>
+  </div>
+
+  <!-- FEATURED VIDEO PLAYER -->
+  <section class="featured-video-section" id="featuredSection" style="display:none;">
+    <div class="container">
+      <div class="featured-video-wrap">
+        <div class="featured-player">
+          <video
+            id="featuredPlayer"
+            controls
+            preload="metadata"
+            poster=""
+          >
+            <source src="" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <div class="featured-video-info" id="featuredInfo">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEOS SECTION -->
+  <section class="section" style="padding-top: 40px;">
+    <div class="container">
+
+      <!-- Search -->
+      <div class="gallery-search">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search videos by title, location..."
+        />
+        <i class="fas fa-search"></i>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="gallery-filters">
+        <button class="filter-tab active" data-category="all">
+          <i class="fas fa-th"></i> All Videos
+        </button>
+        <button class="filter-tab" data-category="travel">
+          <i class="fas fa-plane"></i> Travel
+        </button>
+        <button class="filter-tab" data-category="nature">
+          <i class="fas fa-leaf"></i> Nature
+        </button>
+        <button class="filter-tab" data-category="adventure">
+          <i class="fas fa-hiking"></i> Adventure
+        </button>
+        <button class="filter-tab" data-category="culture">
+          <i class="fas fa-landmark"></i> Culture
+        </button>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="gallery-toolbar">
+        <div class="result-count" id="resultCount">Loading videos...</div>
+        <div class="sort-wrap">
+          <label>Sort by:</label>
+          <select id="sortSelect">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="popular">Most Viewed</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Video Grid -->
+      <div class="media-grid video-grid" id="videoGrid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </section>
+
+  <!-- VIDEO PLAYER MODAL -->
+  <div class="modal" id="videoModal">
+    <div class="modal-overlay" onclick="closeVideoModal()"></div>
+    <div class="modal-box video-modal-box">
+      <button class="modal-close" onclick="closeVideoModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="video-modal-player">
+        <video id="modalPlayer" controls preload="metadata" style="width:100%; border-radius:10px; max-height:65vh;">
+          <source id="modalVideoSrc" src="" type="video/mp4">
+        </video>
+      </div>
+      <div class="video-modal-info" id="videoModalInfo"></div>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal" id="loginModal">
+    <div class="modal-overlay" onclick="closeModal('loginModal')"></div>
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('loginModal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-header">
+        <i class="fas fa-download"></i>
+        <h3>Login to Download</h3>
+        <p>Create a free account to download videos</p>
+      </div>
+      <div class="modal-actions">
+        <a href="login.html" class="btn-primary">
+          <i class="fas fa-sign-in-alt"></i> Login Now
+        </a>
+        <a href="register.html" class="btn-secondary">
+          <i class="fas fa-user-plus"></i> Create Free Account
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <i class="fas fa-mountain"></i>
+            <span>The Silent Route</span>
+          </div>
+          <p>Exploring the world one silent route at a time.</p>
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="videos.html">Videos</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Account</h4>
+          <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h4>Follow Us</h4>
+          <p><i class="fab fa-instagram"></i> @TheSilentRoute</p>
+          <p><i class="fab fa-youtube"></i> @TheSilentRoute</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 The Silent Route. All Rights Reserved.</p>
+        <p>Made with <i class="fas fa-heart" style="color:#e94560;"></i> for adventurers</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/videos.js"></script>
+</body>
+</html>

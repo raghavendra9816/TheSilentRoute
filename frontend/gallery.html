@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="The Silent Route - Photo Gallery"/>
+  <title>Gallery - The Silent Route</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/navbar.css"/>
+  <link rel="stylesheet" href="css/gallery.css"/>
+  <link rel="stylesheet" href="css/modal.css"/>
+  <link rel="stylesheet" href="css/footer.css"/>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <i class="fas fa-mountain"></i>
+        <span>The Silent Route</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="gallery.html" class="nav-link active">Gallery</a>
+        <a href="videos.html" class="nav-link">Videos</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+        <div class="nav-auth" id="navAuth"></div>
+      </div>
+      <button class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <h1><i class="fas fa-images"></i> Photo Gallery</h1>
+      <p>Explore stunning photographs from our silent journeys</p>
+    </div>
+  </div>
+
+  <!-- GALLERY SECTION -->
+  <section class="section" style="padding-top: 50px;">
+    <div class="container">
+
+      <!-- Search Bar -->
+      <div class="gallery-search">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search photos by title, location, tags..."
+        />
+        <i class="fas fa-search"></i>
+      </div>
+
+      <!-- Filter Row -->
+      <div class="gallery-filters" id="galleryFilters">
+        <button class="filter-tab active" data-category="all">
+          <i class="fas fa-th"></i> All Photos
+        </button>
+        <button class="filter-tab" data-category="travel">
+          <i class="fas fa-plane"></i> Travel
+        </button>
+        <button class="filter-tab" data-category="nature">
+          <i class="fas fa-leaf"></i> Nature
+        </button>
+        <button class="filter-tab" data-category="adventure">
+          <i class="fas fa-hiking"></i> Adventure
+        </button>
+        <button class="filter-tab" data-category="culture">
+          <i class="fas fa-landmark"></i> Culture
+        </button>
+        <button class="filter-tab" data-category="people">
+          <i class="fas fa-users"></i> People
+        </button>
+        <button class="filter-tab" data-category="food">
+          <i class="fas fa-utensils"></i> Food
+        </button>
+      </div>
+
+      <!-- Sort & Count Row -->
+      <div class="gallery-toolbar">
+        <div class="result-count" id="resultCount">
+          Loading photos...
+        </div>
+        <div class="sort-wrap">
+          <label>Sort by:</label>
+          <select id="sortSelect">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="popular">Most Viewed</option>
+            <option value="downloads">Most Downloaded</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Photo Grid -->
+      <div class="media-grid" id="galleryGrid">
+        <!-- Skeleton loaders -->
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+
+    </div>
+  </section>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal" id="loginModal">
+    <div class="modal-overlay" onclick="closeModal('loginModal')"></div>
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('loginModal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-header">
+        <i class="fas fa-download"></i>
+        <h3>Login to Download</h3>
+        <p>Create a free account to download photos with watermark</p>
+      </div>
+      <div class="modal-actions">
+        <a href="login.html" class="btn-primary">
+          <i class="fas fa-sign-in-alt"></i> Login Now
+        </a>
+        <a href="register.html" class="btn-secondary">
+          <i class="fas fa-user-plus"></i> Create Free Account
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
+    <div class="lightbox-content" id="lightboxContent">
+      <button class="lightbox-close" id="lightboxClose">
+        <i class="fas fa-times"></i>
+      </button>
+      <button class="lightbox-nav prev" id="lightboxPrev">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="lightbox-nav next" id="lightboxNext">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+      <img id="lightboxImg" src="" alt="" />
+      <div class="lightbox-info" id="lightboxInfo"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <i class="fas fa-mountain"></i>
+            <span>The Silent Route</span>
+          </div>
+          <p>Exploring the world one silent route at a time.</p>
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="videos.html">Videos</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Account</h4>
+          <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h4>Follow Us</h4>
+          <p><i class="fab fa-instagram"></i> @TheSilentRoute</p>
+          <p><i class="fab fa-youtube"></i> @TheSilentRoute</p>
+          <p><i class="fab fa-facebook-f"></i> @TheSilentRoute</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 The Silent Route. All Rights Reserved.</p>
+        <p>Made with <i class="fas fa-heart" style="color:#e94560;"></i> for adventurers</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/gallery.js"></script>
+</body>
+</html>

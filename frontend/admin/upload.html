@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Media - Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <i class="fas fa-mountain"></i>
+          <div>
+            <span class="logo-text">Silent Route</span>
+            <span class="logo-sub">Admin Panel</span>
+          </div>
+        </div>
+        <button class="sidebar-close" id="sidebarClose">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Main</div>
+        <a href="index.html" class="sidebar-link">
+          <i class="fas fa-th-large"></i> Dashboard
+        </a>
+        <a href="upload.html" class="sidebar-link active">
+          <i class="fas fa-upload"></i> Upload Media
+        </a>
+        <a href="media.html" class="sidebar-link">
+          <i class="fas fa-photo-video"></i> Manage Media
+        </a>
+        <div class="nav-section-title">Users</div>
+        <a href="users.html" class="sidebar-link">
+          <i class="fas fa-users"></i> All Users
+        </a>
+        <a href="messages.html" class="sidebar-link">
+          <i class="fas fa-envelope"></i> Messages
+        </a>
+        <div class="nav-section-title">Site</div>
+        <a href="../index.html" class="sidebar-link" target="_blank">
+          <i class="fas fa-globe"></i> View Website
+        </a>
+        <a href="#" class="sidebar-link logout-link" onclick="Auth.logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </nav>
+      <div class="sidebar-user">
+        <i class="fas fa-user-shield"></i>
+        <div>
+          <div id="adminName">Admin</div>
+          <div class="sidebar-user-role">Administrator</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <button class="sidebar-toggle" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="admin-page-title">Upload Media</h1>
+      </div>
+
+      <div class="admin-content">
+        <div class="upload-container">
+          <!-- Type Selector -->
+          <div class="type-selector">
+            <button class="type-btn active" id="imageTypeBtn" onclick="setUploadType('image')">
+              <i class="fas fa-image"></i> Upload Image
+            </button>
+            <button class="type-btn" id="videoTypeBtn" onclick="setUploadType('video')">
+              <i class="fas fa-video"></i> Upload Video
+            </button>
+          </div>
+
+          <!-- Drop Zone -->
+          <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <div id="dropZoneContent">
+              <div class="drop-zone-icon">
+                <i class="fas fa-cloud-upload-alt" id="dropIcon"></i>
+              </div>
+              <p>Click to select or drag & drop your file here</p>
+              <span id="dropHint">Supports: JPG, PNG, WEBP (Max 10MB)</span>
+            </div>
+            <img id="previewImg" class="preview-img" src="" alt="" style="display:none;"/>
+            <div class="file-name-display" id="fileName" style="display:none;">
+              <i class="fas fa-check-circle"></i>
+              <span id="fileNameText"></span>
+            </div>
+          </div>
+          <input
+            type="file"
+            id="fileInput"
+            accept="image/*"
+            style="display:none;"
+            onchange="handleFileSelect(this)"
+          />
+
+          <!-- Upload Form -->
+          <form id="uploadForm" class="admin-card" style="padding:24px; margin-top:24px;">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Title *</label>
+                <input type="text" id="mediaTitle" placeholder="Enter media title" required maxlength="100"/>
+              </div>
+              <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="mediaLocation" placeholder="e.g. Kathmandu, Nepal"/>
+              </div>
+              <div class="form-group">
+                <label>Category</label>
+                <select id="mediaCategory">
+                  <option value="travel">Travel</option>
+                  <option value="nature">Nature</option>
+                  <option value="adventure">Adventure</option>
+                  <option value="culture">Culture</option>
+                  <option value="people">People</option>
+                  <option value="food">Food</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Tags <span style="color:var(--gray);font-weight:400;">(comma separated)</span></label>
+                <input type="text" id="mediaTags" placeholder="nepal, himalaya, trek"/>
+              </div>
+              <div class="form-group full-width">
+                <label>Description</label>
+                <textarea
+                  id="mediaDescription"
+                  placeholder="Write a short description..."
+                  rows="4"
+                  maxlength="500"
+                ></textarea>
+              </div>
+              <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="isFeatured" style="width:auto;"/>
+                <label for="isFeatured" style="margin-bottom:0; cursor:pointer;">
+                  Mark as Featured
+                </label>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container" id="progressContainer" style="display:none;">
+              <p style="margin-bottom:8px; font-size:0.9rem; color:var(--gray);">Uploading...</p>
+              <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="progressBar" style="width:0%;"></div>
+              </div>
+              <div class="progress-text" id="progressText">0%</div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="uploadBtn" style="margin-top:16px;">
+              <i class="fas fa-upload"></i> Upload Media
+            </button>
+          </form>
+
+          <!-- Recent Uploads -->
+          <div class="admin-card" style="margin-top:24px;">
+            <div class="card-header">
+              <h3><i class="fas fa-history"></i> Recent Uploads</h3>
+              <a href="media.html" class="card-link">View All</a>
+            </div>
+            <div class="card-body">
+              <div id="recentUploads">
+                <div class="spinner" style="width:30px;height:30px;margin:20px auto;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="upload.js"></script>
+</body>
+</html>

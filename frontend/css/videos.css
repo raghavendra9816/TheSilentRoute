@@ -1,0 +1,252 @@
+/* ============================================
+   VIDEOS PAGE STYLES
+   ============================================ */
+
+/* Featured Video Section */
+.featured-video-section {
+  background: var(--secondary);
+  padding: 50px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.featured-video-wrap {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.featured-player {
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.featured-player video {
+  width: 100%;
+  display: block;
+  max-height: 450px;
+  object-fit: contain;
+}
+
+.featured-video-info {
+  padding: 10px 0;
+}
+
+.featured-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gradient);
+  color: white;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+}
+
+.featured-video-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.featured-video-desc {
+  color: var(--gray);
+  font-size: 0.92rem;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.featured-video-meta {
+  display: flex;
+  gap: 20px;
+  color: var(--gray);
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.featured-video-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.featured-video-meta i { color: var(--gold); }
+
+/* Video Card Overrides */
+.video-grid .media-thumbnail {
+  height: 200px;
+}
+
+.video-duration {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.75);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* Video Modal */
+.video-modal-box {
+  max-width: 860px !important;
+  width: 100% !important;
+}
+
+.video-modal-player {
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.video-modal-info {
+  padding: 4px 0;
+}
+
+.video-modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.video-modal-meta {
+  display: flex;
+  gap: 20px;
+  color: var(--gray);
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.video-modal-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Toolbar */
+.gallery-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.result-count {
+  color: var(--gray);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.result-count strong { color: var(--text); }
+
+.sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gray);
+  font-size: 0.88rem;
+}
+
+.sort-wrap select {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 0.88rem;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Media Tags */
+.media-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: rgba(245, 166, 35, 0.1);
+  color: var(--gold);
+  border: 1px solid rgba(245, 166, 35, 0.2);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* Page dots */
+.page-dots {
+  color: var(--gray);
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+}
+
+/* Lightbox Nav Buttons */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s;
+  z-index: 10;
+}
+
+.lightbox-nav.prev { left: -60px; }
+.lightbox-nav.next { right: -60px; }
+.lightbox-nav:hover { background: var(--accent); border-color: var(--accent); }
+
+.lightbox-meta {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+  margin: 8px 0;
+}
+
+.lightbox-counter {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .featured-video-wrap { grid-template-columns: 1fr; }
+  .lightbox-nav.prev { left: -10px; }
+  .lightbox-nav.next { right: -10px; }
+}
+
+@media (max-width: 600px) {
+  .lightbox-nav { display: none; }
+}

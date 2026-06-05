@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="The Silent Route - Explore breathtaking travel photos and videos" />
+  <meta name="keywords" content="travel, nepal, himalaya, adventure, photography" />
+  <title>The Silent Route</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/hero.css" />
+  <link rel="stylesheet" href="css/gallery.css" />
+  <link rel="stylesheet" href="css/modal.css" />
+  <link rel="stylesheet" href="css/footer.css" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <i class="fas fa-mountain"></i>
+        <span>The Silent Route</span>
+      </a>
+
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="gallery.html" class="nav-link">Gallery</a>
+        <a href="videos.html" class="nav-link">Videos</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+
+        <div class="nav-auth" id="navAuth">
+          <!-- Filled by JavaScript -->
+        </div>
+      </div>
+
+      <button class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-particles" id="particles"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <i class="fas fa-mountain"></i> Adventure Awaits
+      </div>
+      <h1 class="hero-title">
+        <span class="title-main">THE SILENT</span>
+        <span class="title-sub">ROUTE</span>
+      </h1>
+      <p class="hero-tagline">The Journey Begins...</p>
+      <p class="hero-desc">
+        Explore breathtaking landscapes, ancient temples, and untold stories
+        from the road less traveled across Nepal and beyond.
+      </p>
+      <div class="hero-buttons">
+        <a href="gallery.html" class="btn-primary">
+          <i class="fas fa-images"></i> Explore Gallery
+        </a>
+        <a href="videos.html" class="btn-secondary">
+          <i class="fas fa-play"></i> Watch Videos
+        </a>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <span>Scroll Down</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ===== STATS SECTION ===== -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item" data-target="500">
+          <i class="fas fa-images stat-icon"></i>
+          <div class="stat-number" id="stat1">0</div>
+          <div class="stat-label">Photos</div>
+        </div>
+        <div class="stat-item" data-target="100">
+          <i class="fas fa-video stat-icon"></i>
+          <div class="stat-number" id="stat2">0</div>
+          <div class="stat-label">Videos</div>
+        </div>
+        <div class="stat-item" data-target="25">
+          <i class="fas fa-map-marker-alt stat-icon"></i>
+          <div class="stat-number" id="stat3">0</div>
+          <div class="stat-label">Locations</div>
+        </div>
+        <div class="stat-item" data-target="2000">
+          <i class="fas fa-download stat-icon"></i>
+          <div class="stat-number" id="stat4">0</div>
+          <div class="stat-label">Downloads</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURED MEDIA ===== -->
+  <section class="section featured-section">
+    <div class="container">
+      <h2 class="section-title">Featured Content</h2>
+      <p class="section-subtitle">Discover our latest adventures and stories</p>
+
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">All</button>
+        <button class="filter-tab" data-filter="image">Photos</button>
+        <button class="filter-tab" data-filter="video">Videos</button>
+      </div>
+
+      <div class="media-grid" id="featuredGrid">
+        <!-- Loaded by JavaScript -->
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+
+      <div class="view-all-wrap">
+        <a href="gallery.html" class="btn-primary">
+          View All Content <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== JOIN CTA ===== -->
+  <section class="cta-section">
+    <div class="cta-bg"></div>
+    <div class="container">
+      <div class="cta-content">
+        <i class="fas fa-mountain cta-icon"></i>
+        <h2>Join The Journey</h2>
+        <p>
+          Create a free account to download high-quality photos and
+          videos from The Silent Route with our watermark.
+        </p>
+        <div class="cta-buttons">
+          <a href="register.html" class="btn-primary">
+            <i class="fas fa-user-plus"></i> Create Free Account
+          </a>
+          <a href="login.html" class="btn-secondary">
+            <i class="fas fa-sign-in-alt"></i> Already a Member?
+          </a>
+        </div>
+        <div class="cta-features">
+          <span><i class="fas fa-check"></i> Free to join</span>
+          <span><i class="fas fa-check"></i> Download anytime</span>
+          <span><i class="fas fa-check"></i> No spam</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <i class="fas fa-mountain"></i>
+            <span>The Silent Route</span>
+          </div>
+          <p>Exploring the world one silent route at a time. Join us on our journey through breathtaking landscapes and cultures.</p>
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="videos.html">Videos</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4>Account</h4>
+          <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="admin/index.html">Admin Panel</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-contact">
+          <h4>Contact Info</h4>
+          <p><i class="fas fa-envelope"></i> hello@thesilentroute.com</p>
+          <p><i class="fas fa-map-marker-alt"></i> Kathmandu, Nepal</p>
+          <p><i class="fab fa-instagram"></i> @TheSilentRoute</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2024 The Silent Route. All Rights Reserved.</p>
+        <p>Made with <i class="fas fa-heart" style="color: #e94560;"></i> for adventurers</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== LOGIN MODAL ===== -->
+  <div class="modal" id="loginModal">
+    <div class="modal-overlay" onclick="closeModal('loginModal')"></div>
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('loginModal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-header">
+        <i class="fas fa-lock"></i>
+        <h3>Login Required</h3>
+        <p>Please login to download content</p>
+      </div>
+      <div class="modal-actions">
+        <a href="login.html" class="btn-primary">Login Now</a>
+        <a href="register.html" class="btn-secondary">Create Account</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST NOTIFICATION ===== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

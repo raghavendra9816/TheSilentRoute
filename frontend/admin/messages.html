@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Messages - Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <i class="fas fa-mountain"></i>
+          <div>
+            <span class="logo-text">Silent Route</span>
+            <span class="logo-sub">Admin Panel</span>
+          </div>
+        </div>
+        <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Main</div>
+        <a href="index.html" class="sidebar-link"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="upload.html" class="sidebar-link"><i class="fas fa-upload"></i> Upload Media</a>
+        <a href="media.html" class="sidebar-link"><i class="fas fa-photo-video"></i> Manage Media</a>
+        <div class="nav-section-title">Users</div>
+        <a href="users.html" class="sidebar-link"><i class="fas fa-users"></i> All Users</a>
+        <a href="messages.html" class="sidebar-link active"><i class="fas fa-envelope"></i> Messages</a>
+        <div class="nav-section-title">Site</div>
+        <a href="../index.html" class="sidebar-link" target="_blank"><i class="fas fa-globe"></i> View Website</a>
+        <a href="#" class="sidebar-link logout-link" onclick="Auth.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+      <div class="sidebar-user">
+        <i class="fas fa-user-shield"></i>
+        <div>
+          <div id="adminName">Admin</div>
+          <div class="sidebar-user-role">Administrator</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <h1 class="admin-page-title">Contact Messages</h1>
+        <div class="topbar-right">
+          <span id="unreadBadge" style="background:rgba(233,69,96,0.15);color:#e94560;padding:5px 14px;border-radius:20px;font-size:0.85rem;font-weight:700;"></span>
+        </div>
+      </div>
+
+      <div class="admin-content">
+        <!-- Filter Tabs -->
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+          <button class="filter-tab active" onclick="filterMessages('all', this)">All</button>
+          <button class="filter-tab" onclick="filterMessages('unread', this)">Unread</button>
+          <button class="filter-tab" onclick="filterMessages('read', this)">Read</button>
+        </div>
+
+        <!-- Messages List -->
+        <div id="messagesList">
+          <div class="spinner" style="margin:60px auto;"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- VIEW MESSAGE MODAL -->
+  <div class="modal" id="viewMessageModal">
+    <div class="modal-overlay" onclick="closeModal('viewMessageModal')"></div>
+    <div class="modal-box" style="max-width:580px;">
+      <button class="modal-close" onclick="closeModal('viewMessageModal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <div id="messageContent"></div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="messages.js"></script>
+</body>
+</html>

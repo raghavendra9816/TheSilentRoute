@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - The Silent Route</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <i class="fas fa-mountain"></i>
+          <div>
+            <span class="logo-text">Silent Route</span>
+            <span class="logo-sub">Admin Panel</span>
+          </div>
+        </div>
+        <button class="sidebar-close" id="sidebarClose">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Main</div>
+        <a href="index.html" class="sidebar-link active">
+          <i class="fas fa-th-large"></i> Dashboard
+        </a>
+        <a href="upload.html" class="sidebar-link">
+          <i class="fas fa-upload"></i> Upload Media
+        </a>
+        <a href="media.html" class="sidebar-link">
+          <i class="fas fa-photo-video"></i> Manage Media
+        </a>
+
+        <div class="nav-section-title">Users</div>
+        <a href="users.html" class="sidebar-link">
+          <i class="fas fa-users"></i> All Users
+        </a>
+        <a href="messages.html" class="sidebar-link">
+          <i class="fas fa-envelope"></i> Messages
+          <span class="sidebar-badge" id="msgBadge">0</span>
+        </a>
+
+        <div class="nav-section-title">Site</div>
+        <a href="../index.html" class="sidebar-link" target="_blank">
+          <i class="fas fa-globe"></i> View Website
+        </a>
+        <a href="#" class="sidebar-link logout-link" onclick="Auth.logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </nav>
+
+      <div class="sidebar-user">
+        <i class="fas fa-user-shield"></i>
+        <div>
+          <div id="adminName">Admin</div>
+          <div class="sidebar-user-role">Administrator</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Top Bar -->
+      <div class="admin-topbar">
+        <button class="sidebar-toggle" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="admin-page-title">Dashboard</h1>
+        <div class="topbar-right">
+          <span id="topbarUser" class="topbar-user"></span>
+        </div>
+      </div>
+
+      <!-- Dashboard Content -->
+      <div class="admin-content">
+        <!-- Stats Cards -->
+        <div class="stats-row" id="statsRow">
+          <div class="stat-card-admin loading">
+            <div class="spinner" style="margin: 10px auto; width: 30px; height: 30px;"></div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="dashboard-grid">
+          <!-- Recent Media -->
+          <div class="admin-card">
+            <div class="card-header">
+              <h3><i class="fas fa-clock"></i> Recent Uploads</h3>
+              <a href="media.html" class="card-link">View All</a>
+            </div>
+            <div class="card-body">
+              <table class="admin-table" id="recentTable">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Views</th>
+                    <th>Downloads</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="recentTableBody">
+                  <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Recent Users -->
+          <div class="admin-card">
+            <div class="card-header">
+              <h3><i class="fas fa-users"></i> Recent Users</h3>
+              <a href="users.html" class="card-link">View All</a>
+            </div>
+            <div class="card-body">
+              <div id="recentUsersList">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script>
+    // Check admin access
+    if (!Auth.isLoggedIn() || !Auth.isAdmin()) {
+      window.location.href = '/login.html';
+    }
+
+    const user = Auth.getUser();
+    document.getElementById('adminName').textContent = user?.username || 'Admin';
+    document.getElementById('topbarUser').textContent = `👋 ${user?.username}`;
+
+    // Sidebar Toggle
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      document.getElementById('adminSidebar').classList.toggle('open');
+    });
+    document.getElementById('sidebarClose')?.addEventListener('click', () => {
+      document.getElementById('adminSidebar').classList.remove('open');
+    });
+
+    // Load Dashboard Stats
+    async function loadDashboard() {
+      try {
+        const { stats } = await API.get('/admin/dashboard');
+
+        // Render stats cards
+        document.getElementById('statsRow').innerHTML = `
+          <div class="stat-card-admin blue">
+            <div class="stat-card-icon"><i class="fas fa-photo-video"></i></div>
+            <div class="stat-card-info">
+              <div class="stat-card-number">${stats.totalMedia}</div>
+              <div class="stat-card-label">Total Media</div>
+            </div>
+          </div>
+          <div class="stat-card-admin green">
+            <div class="stat-card-icon"><i class="fas fa-images"></i></div>
+            <div class="stat-card-info">
+              <div class="stat-card-number">${stats.totalImages}</div>
+              <div class="stat-card-label">Images</div>
+            </div>
+          </div>
+          <div class="stat-card-admin red">
+            <div class="stat-card-icon"><i class="fas fa-video"></i></div>
+            <div class="stat-card-info">
+              <div class="stat-card-number">${stats.totalVideos}</div>
+              <div class="stat-card-label">Videos</div>
+            </div>
+          </div>
+          <div class="stat-card-admin orange">
+            <div class="stat-card-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-card-info">
+              <div class="stat-card-number">${stats.totalUsers}</div>
+              <div class="stat-card-label">Users</div>
+            </div>
+          </div>
+          <div class="stat-card-admin purple">
+            <div class="stat-card-icon"><i class="fas fa-eye"></i></div>
+            <div class="stat-card-info">
+              <div class="stat-card-number">${stats.totalViews.toLocaleString()}</div>
+              <div class="stat-card-label">Total Views</div>
+            </div>
+          </div>
+          <div class="stat-card-admin gold">
+            <div class="stat-card-icon"><i class="fas fa-download"></i></div>
+            <div class="stat-card-info">
+              <div class="stat-card-number">${stats.totalDownloads.toLocaleString()}</div>
+              <div class="stat-card-label">Downloads</div>
+            </div>
+          </div>
+        `;
+
+        // Update message badge
+        if (stats.unreadMessages > 0) {
+          document.getElementById('msgBadge').textContent = stats.unreadMessages;
+          document.getElementById('msgBadge').style.display = 'inline-block';
+        }
+
+        // Recent media table
+        const tbody = document.getElementById('recentTableBody');
+        tbody.innerHTML = stats.recentMedia.map(item => `
+          <tr>
+            <td>${item.title}</td>
+            <td><span class="badge ${item.type}">${item.type}</span></td>
+            <td>${item.views}</td>
+            <td>${item.downloads}</td>
+            <td>${new Date(item.createdAt).toLocaleDateString()}</td>
+          </tr>
+        `).join('');
+
+        // Recent users list
+        document.getElementById('recentUsersList').innerHTML = stats.recentUsers.map(u => `
+          <div class="user-row">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info-row">
+              <div class="user-name">${u.username}</div>
+              <div class="user-email">${u.email}</div>
+            </div>
+            <div class="user-date">${new Date(u.createdAt).toLocaleDateString()}</div>
+          </div>
+        `).join('') || '<p style="color:var(--gray);text-align:center;padding:20px;">No users yet</p>';
+
+      } catch (error) {
+        showToast('Failed to load dashboard data', 'error');
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
