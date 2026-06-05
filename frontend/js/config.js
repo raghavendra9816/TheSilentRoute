@@ -4,7 +4,7 @@
 
 const CONFIG = {
   // Change this to your Render.com backend URL after deployment
-  API_URL: 'https://your-render-app.onrender.com/api',
+  API_URL: 'https://thesilentroute.onrender.com',
 
   // For local development use:
   // API_URL: 'http://localhost:5000/api',
