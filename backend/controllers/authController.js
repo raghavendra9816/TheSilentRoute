@@ -1,8 +1,8 @@
 const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+const jwt  = require('jsonwebtoken');
 
 // =============================================
-// GENERATE TOKEN HELPER
+// GENERATE JWT TOKEN
 // =============================================
 const generateToken = (id) => {
   return jwt.sign(
@@ -19,6 +19,7 @@ const register = async (req, res) => {
   try {
     const { username, email, password, adminKey } = req.body;
 
+    // Check required fields
     if (!username || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -26,36 +27,44 @@ const register = async (req, res) => {
       });
     }
 
+    // Check if user already exists
     const existingUser = await User.findOne({
       $or: [
-        { email: email.toLowerCase() },
-        { username: username }
+        { email: email.toLowerCase().trim() },
+        { username: username.trim() }
       ]
     });
 
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: existingUser.email === email.toLowerCase()
+        message: existingUser.email === email.toLowerCase().trim()
           ? 'Email already registered. Please login.'
           : 'Username already taken. Please choose another.'
       });
     }
 
+    // Set role
     let role = 'user';
     if (adminKey && adminKey === process.env.ADMIN_SECRET_KEY) {
       role = 'admin';
     }
 
-    const user = new User({
+    // Hash password manually here
+    // Do NOT rely on pre-save hook to avoid next() issues
+    const bcrypt = require('bcryptjs');
+    const salt           = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create user with already hashed password
+    const user = await User.create({
       username: username.trim(),
-      email: email.toLowerCase().trim(),
-      password: password,
-      role: role
+      email:    email.toLowerCase().trim(),
+      password: hashedPassword,
+      role:     role
     });
 
-    await user.save();
-
+    // Generate token
     const token = generateToken(user._id);
 
     return res.status(201).json({
@@ -63,18 +72,19 @@ const register = async (req, res) => {
       message: `Welcome to The Silent Route, ${user.username}!`,
       token,
       user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
+        id:            user._id,
+        username:      user.username,
+        email:         user.email,
+        role:          user.role,
         downloadCount: user.downloadCount,
-        createdAt: user.createdAt
+        createdAt:     user.createdAt
       }
     });
 
   } catch (error) {
     console.error('Register Error:', error.message);
 
+    // Handle duplicate key error
     if (error.code === 11000) {
       const field = Object.keys(error.keyValue)[0];
       return res.status(400).json({
@@ -83,6 +93,7 @@ const register = async (req, res) => {
       });
     }
 
+    // Handle validation errors
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map(e => e.message);
       return res.status(400).json({
@@ -94,7 +105,7 @@ const register = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Registration failed. Please try again.',
-      error: error.message
+      error:   error.message
     });
   }
 };
@@ -113,8 +124,9 @@ const login = async (req, res) => {
       });
     }
 
+    // Find user with password
     const user = await User.findOne({
-      email: email.toLowerCase()
+      email: email.toLowerCase().trim()
     }).select('+password');
 
     if (!user) {
@@ -131,17 +143,21 @@ const login = async (req, res) => {
       });
     }
 
-    const isPasswordCorrect = await user.comparePassword(password);
+    // Compare password manually
+    const bcrypt          = require('bcryptjs');
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isPasswordCorrect) {
+    if (!isMatch) {
       return res.status(401).json({
         success: false,
         message: 'Incorrect password. Please try again.'
       });
     }
 
-    user.lastLogin = new Date();
-    await user.save();
+    // Update last login
+    await User.findByIdAndUpdate(user._id, {
+      lastLogin: new Date()
+    });
 
     const token = generateToken(user._id);
 
@@ -150,12 +166,12 @@ const login = async (req, res) => {
       message: `Welcome back, ${user.username}!`,
       token,
       user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
+        id:            user._id,
+        username:      user.username,
+        email:         user.email,
+        role:          user.role,
         downloadCount: user.downloadCount,
-        lastLogin: user.lastLogin
+        lastLogin:     new Date()
       }
     });
 
@@ -164,7 +180,7 @@ const login = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Login failed. Please try again.',
-      error: error.message
+      error:   error.message
     });
   }
 };
@@ -186,14 +202,14 @@ const getMe = async (req, res) => {
     return res.status(200).json({
       success: true,
       user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
+        id:            user._id,
+        username:      user.username,
+        email:         user.email,
+        role:          user.role,
         downloadCount: user.downloadCount,
-        bio: user.bio,
-        createdAt: user.createdAt,
-        lastLogin: user.lastLogin
+        bio:           user.bio,
+        createdAt:     user.createdAt,
+        lastLogin:     user.lastLogin
       }
     });
 
@@ -233,7 +249,7 @@ const updateProfile = async (req, res) => {
 };
 
 // =============================================
-// EXPORTS - ALL FUNCTIONS MUST BE HERE
+// EXPORTS
 // =============================================
 module.exports = {
   register,

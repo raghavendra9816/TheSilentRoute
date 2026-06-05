@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt   = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -15,8 +15,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Email is required'],
     unique: true,
     lowercase: true,
-    trim: true,
-    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email']
+    trim: true
   },
   password: {
     type: String,
@@ -57,27 +56,28 @@ const userSchema = new mongoose.Schema({
 });
 
 // =============================================
-// FIX: Use regular function NOT arrow function
-// Arrow functions break mongoose middleware
+// HASH PASSWORD BEFORE SAVING
 // =============================================
 userSchema.pre('save', async function(next) {
-  // Only hash if password was changed or is new
+  // Only hash if password was modified
   if (!this.isModified('password')) {
     return next();
   }
 
   try {
-    const salt = await bcrypt.genSalt(12);
+    const salt    = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    return next();
-  } catch (error) {
-    return next(error);
+    next();
+  } catch (err) {
+    next(err);
   }
 });
 
-// Method to compare passwords
+// =============================================
+// COMPARE PASSWORD METHOD
+// =============================================
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = mongoose.models.User || mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);
