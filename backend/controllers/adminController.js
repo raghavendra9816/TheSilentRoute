@@ -1,10 +1,12 @@
-const Media = require('../models/Media');
-const User = require('../models/User');
+const Media   = require('../models/Media');
+const User    = require('../models/User');
 const Contact = require('../models/Contact');
 const { cloudinary } = require('../config/cloudinary');
 
-// ===== UPLOAD MEDIA =====
-exports.uploadMedia = async (req, res) => {
+// =============================================
+// UPLOAD MEDIA
+// =============================================
+const uploadMedia = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -13,7 +15,7 @@ exports.uploadMedia = async (req, res) => {
       });
     }
 
-    const { title, description, category, tags, location } = req.body;
+    const { title, description, category, tags, location, isFeatured } = req.body;
 
     if (!title) {
       return res.status(400).json({
@@ -23,19 +25,16 @@ exports.uploadMedia = async (req, res) => {
     }
 
     const isVideo = req.file.mimetype.startsWith('video');
-    const isImage = req.file.mimetype.startsWith('image');
 
     let thumbnailUrl = '';
 
-    if (isImage) {
-      // Generate smaller thumbnail
+    if (!isVideo) {
       thumbnailUrl = cloudinary.url(req.file.filename, {
         transformation: [
           { width: 600, height: 400, crop: 'fill', quality: 80 }
         ]
       });
-    } else if (isVideo) {
-      // Generate video thumbnail
+    } else {
       thumbnailUrl = cloudinary.url(req.file.filename, {
         resource_type: 'video',
         transformation: [
@@ -46,34 +45,41 @@ exports.uploadMedia = async (req, res) => {
     }
 
     const media = await Media.create({
-      title: title.trim(),
+      title:       title.trim(),
       description: description ? description.trim() : '',
-      type: isVideo ? 'video' : 'image',
-      url: req.file.path,
-      publicId: req.file.filename,
+      type:        isVideo ? 'video' : 'image',
+      url:         req.file.path,
+      publicId:    req.file.filename,
       thumbnailUrl,
-      category: category || 'travel',
-      tags: tags ? tags.split(',').map(t => t.trim()).filter(t => t) : [],
-      location: location ? location.trim() : '',
-      fileSize: req.file.size || 0,
-      uploadedBy: req.user._id
+      category:    category || 'travel',
+      tags:        tags
+        ? tags.split(',').map(t => t.trim()).filter(t => t)
+        : [],
+      location:    location ? location.trim() : '',
+      fileSize:    req.file.size || 0,
+      isFeatured:  isFeatured === 'true',
+      uploadedBy:  req.user._id
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      message: `${isVideo ? 'Video' : 'Image'} uploaded successfully! 🎉`,
+      message: `${isVideo ? 'Video' : 'Image'} uploaded successfully!`,
       data: media
     });
+
   } catch (error) {
-    res.status(500).json({
+    console.error('uploadMedia Error:', error.message);
+    return res.status(500).json({
       success: false,
       message: 'Upload failed: ' + error.message
     });
   }
 };
 
-// ===== GET ALL MEDIA FOR ADMIN =====
-exports.getAdminMedia = async (req, res) => {
+// =============================================
+// GET ALL MEDIA FOR ADMIN
+// =============================================
+const getAdminMedia = async (req, res) => {
   try {
     const { page = 1, limit = 20, type, search } = req.query;
     let query = {};
@@ -90,7 +96,7 @@ exports.getAdminMedia = async (req, res) => {
       .skip((parseInt(page) - 1) * parseInt(limit))
       .populate('uploadedBy', 'username email');
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: media.length,
       total,
@@ -98,27 +104,39 @@ exports.getAdminMedia = async (req, res) => {
       currentPage: parseInt(page),
       data: media
     });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('getAdminMedia Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// ===== EDIT MEDIA =====
-exports.editMedia = async (req, res) => {
+// =============================================
+// EDIT MEDIA
+// =============================================
+const editMedia = async (req, res) => {
   try {
     const {
-      title, description, category,
-      tags, location, isActive, isFeatured
+      title,
+      description,
+      category,
+      tags,
+      location,
+      isActive,
+      isFeatured
     } = req.body;
 
     const updateData = {};
-    if (title !== undefined) updateData.title = title.trim();
+    if (title       !== undefined) updateData.title       = title.trim();
     if (description !== undefined) updateData.description = description.trim();
-    if (category !== undefined) updateData.category = category;
-    if (location !== undefined) updateData.location = location.trim();
-    if (isActive !== undefined) updateData.isActive = isActive;
-    if (isFeatured !== undefined) updateData.isFeatured = isFeatured;
-    if (tags !== undefined) {
+    if (category    !== undefined) updateData.category    = category;
+    if (location    !== undefined) updateData.location    = location.trim();
+    if (isActive    !== undefined) updateData.isActive    = isActive;
+    if (isFeatured  !== undefined) updateData.isFeatured  = isFeatured;
+    if (tags        !== undefined) {
       updateData.tags = typeof tags === 'string'
         ? tags.split(',').map(t => t.trim()).filter(t => t)
         : tags;
@@ -138,18 +156,25 @@ exports.editMedia = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Media updated successfully!',
       data: media
     });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('editMedia Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// ===== DELETE MEDIA =====
-exports.deleteMedia = async (req, res) => {
+// =============================================
+// DELETE MEDIA
+// =============================================
+const deleteMedia = async (req, res) => {
   try {
     const media = await Media.findById(req.params.id);
 
@@ -167,22 +192,29 @@ exports.deleteMedia = async (req, res) => {
         { resource_type: media.type === 'video' ? 'video' : 'image' }
       );
     } catch (cloudErr) {
-      console.log('Cloudinary delete error:', cloudErr.message);
+      console.log('Cloudinary delete warning:', cloudErr.message);
     }
 
     await Media.findByIdAndDelete(req.params.id);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Media deleted successfully!'
     });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('deleteMedia Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// ===== DASHBOARD STATS =====
-exports.getDashboardStats = async (req, res) => {
+// =============================================
+// DASHBOARD STATS
+// =============================================
+const getDashboardStats = async (req, res) => {
   try {
     const [
       totalMedia,
@@ -214,7 +246,7 @@ exports.getDashboardStats = async (req, res) => {
       ])
     ]);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       stats: {
         totalMedia,
@@ -222,21 +254,28 @@ exports.getDashboardStats = async (req, res) => {
         totalVideos,
         totalUsers,
         activeMedia,
-        totalViews: viewsAgg[0]?.total || 0,
-        totalDownloads: downloadsAgg[0]?.total || 0,
+        totalViews:      viewsAgg[0]?.total      || 0,
+        totalDownloads:  downloadsAgg[0]?.total  || 0,
         unreadMessages,
         recentMedia,
         recentUsers,
         categoryStats
       }
     });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('getDashboardStats Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// ===== GET ALL USERS =====
-exports.getAllUsers = async (req, res) => {
+// =============================================
+// GET ALL USERS
+// =============================================
+const getAllUsers = async (req, res) => {
   try {
     const { page = 1, limit = 20, search } = req.query;
     let query = { role: 'user' };
@@ -244,7 +283,7 @@ exports.getAllUsers = async (req, res) => {
     if (search) {
       query.$or = [
         { username: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } }
+        { email:    { $regex: search, $options: 'i' } }
       ];
     }
 
@@ -254,21 +293,30 @@ exports.getAllUsers = async (req, res) => {
       .limit(parseInt(limit))
       .skip((parseInt(page) - 1) * parseInt(limit));
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: users.length,
       total,
+      totalPages: Math.ceil(total / parseInt(limit)),
       data: users
     });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('getAllUsers Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// ===== TOGGLE USER STATUS =====
-exports.toggleUserStatus = async (req, res) => {
+// =============================================
+// TOGGLE USER STATUS
+// =============================================
+const toggleUserStatus = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -279,36 +327,75 @@ exports.toggleUserStatus = async (req, res) => {
     user.isActive = !user.isActive;
     await user.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: `User ${user.isActive ? 'activated' : 'deactivated'} successfully!`,
       isActive: user.isActive
     });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('toggleUserStatus Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// ===== GET ALL MESSAGES =====
-exports.getMessages = async (req, res) => {
+// =============================================
+// GET ALL MESSAGES
+// =============================================
+const getMessages = async (req, res) => {
   try {
     const messages = await Contact.find().sort({ createdAt: -1 });
-    res.status(200).json({
+
+    return res.status(200).json({
       success: true,
       count: messages.length,
       data: messages
     });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('getMessages Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// ===== MARK MESSAGE AS READ =====
-exports.markMessageRead = async (req, res) => {
+// =============================================
+// MARK MESSAGE AS READ
+// =============================================
+const markMessageRead = async (req, res) => {
   try {
     await Contact.findByIdAndUpdate(req.params.id, { isRead: true });
-    res.status(200).json({ success: true, message: 'Message marked as read.' });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Message marked as read.'
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('markMessageRead Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
+};
+
+// =============================================
+// EXPORTS - ALL FUNCTIONS
+// =============================================
+module.exports = {
+  uploadMedia,
+  getAdminMedia,
+  editMedia,
+  deleteMedia,
+  getDashboardStats,
+  getAllUsers,
+  toggleUserStatus,
+  getMessages,
+  markMessageRead
 };

@@ -1,19 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const {
-  getAllMedia,
-  getSingleMedia,
-  downloadMedia,
-  getCategories
-} = require('../controllers/mediaController');
+
+// Import controller
+const mediaController = require('../controllers/mediaController');
+
+// Import middleware
 const { protect } = require('../middleware/authMiddleware');
 
-// Public routes - anyone can view
-router.get('/', getAllMedia);
-router.get('/categories', getCategories);
-router.get('/:id', getSingleMedia);
+// =============================================
+// VERIFY IMPORTS
+// =============================================
+console.log('Media Controller Functions:', {
+  getAllMedia:    typeof mediaController.getAllMedia,
+  getSingleMedia: typeof mediaController.getSingleMedia,
+  downloadMedia: typeof mediaController.downloadMedia,
+  getCategories: typeof mediaController.getCategories
+});
 
-// Protected routes - must be logged in
-router.get('/:id/download', protect, downloadMedia);
+// =============================================
+// PUBLIC ROUTES - No login needed
+// =============================================
+router.get('/',            mediaController.getAllMedia);
+router.get('/categories',  mediaController.getCategories);
+router.get('/:id',         mediaController.getSingleMedia);
+
+// =============================================
+// PROTECTED ROUTES - Login required
+// =============================================
+router.get('/:id/download', protect, mediaController.downloadMedia);
 
 module.exports = router;

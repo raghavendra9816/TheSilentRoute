@@ -1,8 +1,10 @@
 const Media = require('../models/Media');
 const { cloudinary } = require('../config/cloudinary');
 
-// ===== GET ALL MEDIA (PUBLIC) =====
-exports.getAllMedia = async (req, res) => {
+// =============================================
+// GET ALL MEDIA - PUBLIC
+// =============================================
+const getAllMedia = async (req, res) => {
   try {
     const {
       type,
@@ -22,20 +24,20 @@ exports.getAllMedia = async (req, res) => {
 
     if (search) {
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
+        { title:       { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
-        { location: { $regex: search, $options: 'i' } },
-        { tags: { $in: [new RegExp(search, 'i')] } }
+        { location:    { $regex: search, $options: 'i' } },
+        { tags:        { $in: [new RegExp(search, 'i')] } }
       ];
     }
 
     let sortOption = {};
     switch (sort) {
-      case 'newest': sortOption = { createdAt: -1 }; break;
-      case 'oldest': sortOption = { createdAt: 1 }; break;
-      case 'popular': sortOption = { views: -1 }; break;
+      case 'newest':    sortOption = { createdAt: -1 }; break;
+      case 'oldest':    sortOption = { createdAt:  1 }; break;
+      case 'popular':   sortOption = { views:     -1 }; break;
       case 'downloads': sortOption = { downloads: -1 }; break;
-      default: sortOption = { createdAt: -1 };
+      default:          sortOption = { createdAt: -1 };
     }
 
     const total = await Media.countDocuments(query);
@@ -46,7 +48,7 @@ exports.getAllMedia = async (req, res) => {
       .populate('uploadedBy', 'username')
       .select('-watermarkedUrl');
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: media.length,
       total,
@@ -54,16 +56,20 @@ exports.getAllMedia = async (req, res) => {
       currentPage: parseInt(page),
       data: media
     });
+
   } catch (error) {
-    res.status(500).json({
+    console.error('getAllMedia Error:', error.message);
+    return res.status(500).json({
       success: false,
       message: error.message
     });
   }
 };
 
-// ===== GET SINGLE MEDIA =====
-exports.getSingleMedia = async (req, res) => {
+// =============================================
+// GET SINGLE MEDIA - PUBLIC
+// =============================================
+const getSingleMedia = async (req, res) => {
   try {
     const media = await Media.findById(req.params.id)
       .populate('uploadedBy', 'username');
@@ -77,14 +83,24 @@ exports.getSingleMedia = async (req, res) => {
 
     await Media.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
 
-    res.status(200).json({ success: true, data: media });
+    return res.status(200).json({
+      success: true,
+      data: media
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('getSingleMedia Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// ===== DOWNLOAD WITH WATERMARK (LOGIN REQUIRED) =====
-exports.downloadMedia = async (req, res) => {
+// =============================================
+// DOWNLOAD WITH WATERMARK - LOGIN REQUIRED
+// =============================================
+const downloadMedia = async (req, res) => {
   try {
     const media = await Media.findById(req.params.id);
 
@@ -96,10 +112,8 @@ exports.downloadMedia = async (req, res) => {
     }
 
     let downloadUrl;
-    const watermarkText = 'The%20Silent%20Route';
 
     if (media.type === 'image') {
-      // Add watermark using Cloudinary URL transformation
       downloadUrl = cloudinary.url(media.publicId, {
         transformation: [
           { width: 1920, crop: 'limit', quality: 85 },
@@ -108,21 +122,19 @@ exports.downloadMedia = async (req, res) => {
               font_family: 'Arial',
               font_size: 55,
               font_weight: 'bold',
-              text: watermarkText
+              text: 'The%20Silent%20Route'
             },
             color: 'white',
             opacity: 55,
             gravity: 'center',
-            angle: -30,
-            x: 10,
-            y: 10
+            angle: -30
           },
           {
             overlay: {
               font_family: 'Arial',
               font_size: 30,
               font_weight: 'bold',
-              text: watermarkText
+              text: 'The%20Silent%20Route'
             },
             color: 'white',
             opacity: 40,
@@ -133,47 +145,60 @@ exports.downloadMedia = async (req, res) => {
         ]
       });
     } else {
-      // For videos use watermarked version or original
       downloadUrl = media.watermarkedUrl || media.url;
     }
 
-    // Update counts
-    await Media.findByIdAndUpdate(req.params.id, {
-      $inc: { downloads: 1 }
-    });
+    await Media.findByIdAndUpdate(req.params.id, { $inc: { downloads: 1 } });
     await req.user.updateOne({ $inc: { downloadCount: 1 } });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Download ready! Watermark has been added.',
       downloadUrl,
       filename: `thesilentroute_${media.title.replace(/\s+/g, '_').toLowerCase()}`,
       type: media.type
     });
+
   } catch (error) {
-    res.status(500).json({
+    console.error('downloadMedia Error:', error.message);
+    return res.status(500).json({
       success: false,
       message: error.message
     });
   }
 };
 
-// ===== GET CATEGORIES WITH COUNT =====
-exports.getCategories = async (req, res) => {
+// =============================================
+// GET CATEGORIES
+// =============================================
+const getCategories = async (req, res) => {
   try {
     const categories = await Media.aggregate([
       { $match: { isActive: true } },
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 }
-        }
-      },
+      { $group: { _id: '$category', count: { $sum: 1 } } },
       { $sort: { count: -1 } }
     ]);
 
-    res.status(200).json({ success: true, data: categories });
+    return res.status(200).json({
+      success: true,
+      data: categories
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('getCategories Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
+};
+
+// =============================================
+// EXPORTS
+// =============================================
+module.exports = {
+  getAllMedia,
+  getSingleMedia,
+  downloadMedia,
+  getCategories
 };
