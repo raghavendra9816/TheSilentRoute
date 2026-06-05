@@ -3,29 +3,24 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const rateLimit = require('express-rate-limit');
-const path = require('path');
 
+// Load environment variables FIRST
 dotenv.config();
 
 const app = express();
 
 // ===== MIDDLEWARE =====
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:5500',
-    'https://yourusername.github.io',
-    process.env.FRONTEND_URL
-  ],
+  origin: '*', // Allow all for now, restrict later
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Rate Limiting - Prevent abuse
+// Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -33,52 +28,58 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// ===== DATABASE CONNECTION =====
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('✅ MongoDB Atlas Connected Successfully!');
-  })
-  .catch((err) => {
-    console.log('❌ Database Connection Error:', err.message);
+// ===== DATABASE =====
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error('❌ MongoDB Connection Error:', error.message);
     process.exit(1);
-  });
+  }
+};
+
+connectDB();
 
 // ===== ROUTES =====
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/media', require('./routes/mediaRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/auth',    require('./routes/authRoutes'));
+app.use('/api/media',   require('./routes/mediaRoutes'));
+app.use('/api/admin',   require('./routes/adminRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
 
-// Health Check Route
+// Health check
 app.get('/', (req, res) => {
-  res.json({
+  res.status(200).json({
     success: true,
     message: '🚀 The Silent Route API is Running!',
-    version: '1.0.0',
-    status: 'Online'
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// 404 Handler
-app.use((req, res) => {
+// ===== 404 HANDLER =====
+app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Route not found'
+    message: `Route ${req.originalUrl} not found`
   });
 });
 
-// Global Error Handler
+// ===== GLOBAL ERROR HANDLER =====
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
+  console.error('Global Error:', err.stack);
+  res.status(err.status || 500).json({
     success: false,
-    message: 'Something went wrong!',
-    error: process.env.NODE_ENV === 'development' ? err.message : 'Server Error'
+    message: err.message || 'Internal Server Error'
   });
 });
 
+// ===== START SERVER =====
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📡 API: http://localhost:${PORT}`);
-}); 
+  console.log(`🚀 Server running on PORT ${PORT}`);
+  console.log(`📡 Health check: http://localhost:${PORT}`);
+});

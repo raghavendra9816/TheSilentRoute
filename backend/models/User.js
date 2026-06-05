@@ -8,8 +8,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     minlength: [3, 'Username must be at least 3 characters'],
-    maxlength: [20, 'Username cannot exceed 20 characters'],
-    match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores']
+    maxlength: [20, 'Username cannot exceed 20 characters']
   },
   email: {
     type: String,
@@ -57,24 +56,28 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Hash password before saving to database
+// =============================================
+// FIX: Use regular function NOT arrow function
+// Arrow functions break mongoose middleware
+// =============================================
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  const salt = await bcrypt.genSalt(12);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
+  // Only hash if password was changed or is new
+  if (!this.isModified('password')) {
+    return next();
+  }
+
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+    return next();
+  } catch (error) {
+    return next(error);
+  }
 });
 
 // Method to compare passwords
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
-};
-
-// Remove password from JSON output
-userSchema.methods.toJSON = function() {
-  const user = this.toObject();
-  delete user.password;
-  return user;
 };
 
 module.exports = mongoose.model('User', userSchema);
