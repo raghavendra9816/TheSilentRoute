@@ -2,7 +2,6 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-// Generate JWT token
 const generateToken = (id) => {
   return jwt.sign(
     { id },
@@ -71,15 +70,6 @@ const register = async (req, res) => {
     });
   } catch (error) {
     console.error('Register Error:', error.message);
-
-    if (error.code === 11000) {
-      const field = Object.keys(error.keyValue)[0];
-      return res.status(400).json({
-        success: false,
-        message: `This ${field} is already registered.`
-      });
-    }
-
     return res.status(500).json({
       success: false,
       message: 'Registration failed. Please try again.',
@@ -155,30 +145,14 @@ const login = async (req, res) => {
   }
 };
 
-// GET CURRENT USER
+// GET ME
 const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found.'
-      });
-    }
-
     return res.status(200).json({
       success: true,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        downloadCount: user.downloadCount,
-        bio: user.bio,
-        createdAt: user.createdAt,
-        lastLogin: user.lastLogin
-      }
+      user
     });
   } catch (error) {
     return res.status(500).json({
@@ -196,7 +170,7 @@ const updateProfile = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.user._id,
       {
-        username: username?.trim() || req.user.username,
+        username: username || req.user.username,
         bio: bio || req.user.bio
       },
       { new: true, runValidators: true }
@@ -205,13 +179,7 @@ const updateProfile = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Profile updated successfully!',
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        bio: user.bio
-      }
+      user
     });
   } catch (error) {
     return res.status(500).json({
