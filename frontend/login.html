@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - The Silent Route</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="stylesheet" href="css/navbar.css"/>
   <link rel="stylesheet" href="css/modal.css"/>
@@ -13,7 +19,7 @@
 </head>
 <body>
 
-  <!-- Navbar -->
+  <!-- NAVBAR -->
   <nav class="navbar scrolled" id="navbar">
     <div class="nav-container">
       <a href="index.html" class="nav-logo">
@@ -21,10 +27,10 @@
         <span>The Silent Route</span>
       </a>
       <div class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link">Home</a>
+        <a href="index.html"   class="nav-link">Home</a>
         <a href="gallery.html" class="nav-link">Gallery</a>
-        <a href="videos.html" class="nav-link">Videos</a>
-        <div class="nav-auth" id="navAuth"></div>
+        <a href="videos.html"  class="nav-link">Videos</a>
+        <div class="nav-auth"  id="navAuth"></div>
       </div>
       <button class="hamburger" id="hamburger">
         <span></span><span></span><span></span>
@@ -32,99 +38,244 @@
     </div>
   </nav>
 
-  <!-- Login Page -->
+  <!-- LOGIN PAGE -->
   <div class="auth-page">
     <div class="auth-card">
+
+      <!-- Logo -->
       <div class="auth-logo">
         <i class="fas fa-mountain"></i>
         <h2>Welcome Back</h2>
         <p>Login to download content from The Silent Route</p>
       </div>
 
+      <!-- Connection Status -->
+      <div id="connectionStatus" style="
+        display: none;
+        background: rgba(245,166,35,0.1);
+        border: 1px solid rgba(245,166,35,0.3);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-bottom: 16px;
+        font-size: 0.85rem;
+        color: #f5a623;
+        text-align: center;
+      ">
+        <i class="fas fa-spinner fa-spin"></i>
+        Waking up server... please wait 30 seconds
+      </div>
+
+      <!-- Error Box -->
       <div class="auth-error" id="errorMsg"></div>
 
+      <!-- Login Form -->
       <form id="loginForm">
+
         <div class="form-group">
-          <label><i class="fas fa-envelope"></i> Email Address</label>
-          <input type="email" id="email" placeholder="your@email.com" required />
+          <label>
+            <i class="fas fa-envelope"></i> Email Address
+          </label>
+          <input
+            type="email"
+            id="loginEmail"
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+          />
         </div>
 
         <div class="form-group">
-          <label><i class="fas fa-lock"></i> Password</label>
+          <label>
+            <i class="fas fa-lock"></i> Password
+          </label>
           <div class="password-wrap">
-            <input type="password" id="password" placeholder="Enter password" required />
-            <button type="button" class="toggle-password" onclick="togglePassword('password')">
-              <i class="fas fa-eye" id="password-eye"></i>
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Enter your password"
+              required
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              onclick="togglePassword()"
+            >
+              <i class="fas fa-eye" id="eyeIcon"></i>
             </button>
           </div>
         </div>
 
-        <button type="submit" class="btn-primary submit-btn" id="submitBtn">
+        <button
+          type="submit"
+          class="btn-primary submit-btn"
+          id="loginBtn"
+        >
           <i class="fas fa-sign-in-alt"></i> Login
         </button>
+
       </form>
 
+      <!-- Footer Links -->
       <div class="auth-footer">
-        <p>Don't have an account? <a href="register.html">Create one free</a></p>
+        <p>
+          Don't have an account?
+          <a href="register.html">Create one free</a>
+        </p>
       </div>
+
     </div>
   </div>
 
+  <!-- Toast -->
   <div class="toast-container" id="toastContainer"></div>
 
+  <!-- Scripts - ORDER MATTERS -->
   <script src="js/config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>
-  <script>
-    // Redirect if already logged in
-    if (Auth.isLoggedIn()) {
-      window.location.href = Auth.isAdmin() ? '/admin/index.html' : '/index.html';
-    }
 
-    function togglePassword(fieldId) {
-      const input = document.getElementById(fieldId);
-      const eye = document.getElementById(`${fieldId}-eye`);
-      if (input.type === 'password') {
-        input.type = 'text';
-        eye.className = 'fas fa-eye-slash';
+  <script>
+    // =============================================
+    // REDIRECT IF ALREADY LOGGED IN
+    // =============================================
+    if (Auth.isLoggedIn()) {
+      if (Auth.isAdmin()) {
+        window.location.href = 'admin/index.html';
       } else {
-        input.type = 'password';
-        eye.className = 'fas fa-eye';
+        window.location.href = 'index.html';
       }
     }
 
+    // =============================================
+    // TOGGLE PASSWORD VISIBILITY
+    // =============================================
+    function togglePassword() {
+      const input   = document.getElementById('loginPassword');
+      const eyeIcon = document.getElementById('eyeIcon');
+
+      if (input.type === 'password') {
+        input.type        = 'text';
+        eyeIcon.className = 'fas fa-eye-slash';
+      } else {
+        input.type        = 'password';
+        eyeIcon.className = 'fas fa-eye';
+      }
+    }
+
+    // =============================================
+    // LOGIN FORM SUBMIT
+    // =============================================
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      const errorMsg = document.getElementById('errorMsg');
 
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
-      btn.disabled = true;
+      const btn       = document.getElementById('loginBtn');
+      const errorMsg  = document.getElementById('errorMsg');
+      const connStatus = document.getElementById('connectionStatus');
+
+      const email    = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      // Clear previous errors
+      errorMsg.textContent = '';
       errorMsg.classList.remove('show');
+      connStatus.style.display = 'none';
+
+      // Basic validation
+      if (!email || !password) {
+        errorMsg.textContent = 'Please enter your email and password.';
+        errorMsg.classList.add('show');
+        return;
+      }
+
+      // Show loading
+      btn.innerHTML  = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+      btn.disabled   = true;
 
       try {
-        const data = await API.post('/auth/login', {
-          email: document.getElementById('email').value,
-          password: document.getElementById('password').value
-        });
+        console.log('Attempting login to:', CONFIG.API_URL + '/auth/login');
 
-        Auth.saveUser(data.token, data.user);
-        showToast(data.message, 'success');
+        const data = await API.post('/auth/login', { email, password });
 
-        setTimeout(() => {
-          if (data.user.role === 'admin') {
-            window.location.href = '/admin/index.html';
-          } else {
-            window.location.href = '/index.html';
-          }
-        }, 1000);
+        if (data.success) {
+          // Save user data
+          Auth.saveUser(data.token, data.user);
+
+          showToast(`Welcome back, ${data.user.username}! 👋`, 'success');
+
+          // Redirect based on role
+          setTimeout(() => {
+            if (data.user.role === 'admin') {
+              window.location.href = 'admin/index.html';
+            } else {
+              window.location.href = 'index.html';
+            }
+          }, 1000);
+
+        } else {
+          errorMsg.textContent = data.message || 'Login failed.';
+          errorMsg.classList.add('show');
+          btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+          btn.disabled  = false;
+        }
+
       } catch (error) {
-        errorMsg.textContent = error.message;
+        console.error('Login error:', error.message);
+
+        // Check if server is sleeping
+        if (
+          error.message.includes('Cannot connect') ||
+          error.message.includes('fetch') ||
+          error.message.includes('NetworkError')
+        ) {
+          connStatus.style.display = 'block';
+          connStatus.innerHTML = `
+            <i class="fas fa-moon"></i>
+            Server is waking up... Please wait 30-60 seconds and try again.
+            <br/><small>This happens on free hosting after inactivity.</small>
+          `;
+          errorMsg.textContent = 'Server is starting up. Please wait and try again.';
+        } else {
+          errorMsg.textContent = error.message || 'Login failed. Please try again.';
+        }
+
         errorMsg.classList.add('show');
         btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
-        btn.disabled = false;
+        btn.disabled  = false;
       }
     });
+
+    // =============================================
+    // CHECK SERVER IS AWAKE ON PAGE LOAD
+    // =============================================
+    const checkServer = async () => {
+      const connStatus = document.getElementById('connectionStatus');
+
+      try {
+        // Ping backend health check
+        const response = await fetch(
+          CONFIG.API_URL.replace('/api', ''),
+          { method: 'GET' }
+        );
+
+        if (response.ok) {
+          connStatus.style.display = 'none';
+          console.log('✅ Server is online');
+        }
+      } catch (error) {
+        // Server might be sleeping - show warning
+        connStatus.style.display = 'block';
+        connStatus.innerHTML = `
+          <i class="fas fa-moon"></i>
+          Server is starting up... This may take 30-60 seconds on first load.
+        `;
+        console.log('⏳ Server waking up...');
+      }
+    };
+
+    // Check server status when page loads
+    checkServer();
   </script>
+
 </body>
 </html>
